@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>你画我猜 - 随机题库</title>
+    <title>你画我猜 - 超级词库版</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #fce4ec; /* 淡淡的粉色背景，氛围轻松 */
+            background-color: #e3f2fd; /* 换个清爽的淡蓝色背景 */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -30,48 +30,49 @@
         }
 
         .category-tag {
-            background-color: #eee;
-            color: #666;
-            padding: 5px 15px;
+            background-color: #ffecb3;
+            color: #d84315;
+            padding: 6px 16px;
             border-radius: 15px;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: bold;
             margin-bottom: 20px;
             display: inline-block;
             min-width: 60px;
         }
 
-        /* 核心词汇显示区域 */
         #word-display {
-            font-size: 60px; /* 字号很大，方便看 */
+            font-size: 56px; 
             font-weight: bold;
             color: #333;
             margin: 20px 0;
-            min-height: 80px; /* 占位，防止抖动 */
+            min-height: 80px;
             line-height: 1.2;
+            word-break: break-all;
         }
 
         .btn {
-            background: linear-gradient(45deg, #FF4081, #F50057);
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
             color: white;
             border: none;
             padding: 15px 40px;
             font-size: 20px;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(245, 0, 87, 0.4);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
             transition: transform 0.1s;
             outline: none;
             width: 80%;
-            -webkit-tap-highlight-color: transparent; /* 移除手机点击的高亮背景 */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:active {
-            transform: scale(0.95); /* 点击时的按压效果 */
+            transform: scale(0.95);
         }
 
         .footer {
             margin-top: 30px;
-            color: #999;
+            color: #78909c;
             font-size: 12px;
         }
     </style>
@@ -80,64 +81,118 @@
 
     <div class="container">
         <div id="category-display" class="category-tag">准备开始</div>
-        
-        <div id="word-display">❓</div>
-
+        <div id="word-display">🎨</div>
         <button class="btn" onclick="nextWord()" id="action-btn">开始游戏</button>
     </div>
 
-    <div class="footer">词库总量: <span id="total-count">0</span></div>
+    <div class="footer">剩余词汇: <span id="remain-count">--</span> / 总词汇: <span id="total-count">--</span></div>
 
     <script>
-        // --- 核心配置：词库 ---
-        // 你可以随时在这里添加新的词，格式是：{ word: "词语", type: "分类" }
+        // --- 扩充后的超级词库 ---
         const rawData = [
-            // 1. 日常用品
+            // === 1. 日常用品 (大幅扩充) ===
             { word: "牙刷", type: "日常用品" }, { word: "雨伞", type: "日常用品" },
             { word: "筷子", type: "日常用品" }, { word: "吹风机", type: "日常用品" },
             { word: "枕头", type: "日常用品" }, { word: "马桶", type: "日常用品" },
             { word: "钥匙", type: "日常用品" }, { word: "眼镜", type: "日常用品" },
             { word: "遥控器", type: "日常用品" }, { word: "口罩", type: "日常用品" },
-            
-            // 2. 食物
+            { word: "拖鞋", type: "日常用品" }, { word: "指甲刀", type: "日常用品" },
+            { word: "充电宝", type: "日常用品" }, { word: "耳机", type: "日常用品" },
+            { word: "卫生纸", type: "日常用品" }, { word: "垃圾桶", type: "日常用品" },
+            { word: "镜子", type: "日常用品" }, { word: "梳子", type: "日常用品" },
+            { word: "牙膏", type: "日常用品" }, { word: "毛巾", type: "日常用品" },
+            { word: "晾衣架", type: "日常用品" }, { word: "扫把", type: "日常用品" },
+            { word: "电饭煲", type: "日常用品" }, { word: "冰箱", type: "日常用品" },
+            { word: "洗衣机", type: "日常用品" }, { word: "空调", type: "日常用品" },
+            { word: "鼠标", type: "日常用品" }, { word: "键盘", type: "日常用品" },
+            { word: "手机", type: "日常用品" }, { word: "手表", type: "日常用品" },
+            { word: "戒指", type: "日常用品" }, { word: "钱包", type: "日常用品" },
+            { word: "背包", type: "日常用品" }, { word: "剪刀", type: "日常用品" },
+            { word: "台灯", type: "日常用品" }, { word: "水杯", type: "日常用品" },
+            { word: "插座", type: "日常用品" }, { word: "计算器", type: "日常用品" },
+            { word: "创可贴", type: "日常用品" }, { word: "温度计", type: "日常用品" },
+
+            // === 2. 食物 (大幅扩充) ===
             { word: "汉堡", type: "食物" }, { word: "火锅", type: "食物" },
             { word: "冰淇淋", type: "食物" }, { word: "臭豆腐", type: "食物" },
             { word: "方便面", type: "食物" }, { word: "西瓜", type: "食物" },
             { word: "荷包蛋", type: "食物" }, { word: "烤串", type: "食物" },
             { word: "包子", type: "食物" }, { word: "珍珠奶茶", type: "食物" },
+            { word: "饺子", type: "食物" }, { word: "面条", type: "食物" },
+            { word: "披萨", type: "食物" }, { word: "薯条", type: "食物" },
+            { word: "蛋糕", type: "食物" }, { word: "巧克力", type: "食物" },
+            { word: "饼干", type: "食物" }, { word: "苹果", type: "食物" },
+            { word: "香蕉", type: "食物" }, { word: "葡萄", type: "食物" },
+            { word: "榴莲", type: "食物" }, { word: "草莓", type: "食物" },
+            { word: "芒果", type: "食物" }, { word: "菠萝", type: "食物" },
+            { word: "可乐", type: "食物" }, { word: "啤酒", type: "食物" },
+            { word: "烤鸭", type: "食物" }, { word: "寿司", type: "食物" },
+            { word: "甜甜圈", type: "食物" }, { word: "爆米花", type: "食物" },
+            { word: "棒棒糖", type: "食物" }, { word: "螃蟹", type: "食物" },
+            { word: "龙虾", type: "食物" }, { word: "烤红薯", type: "食物" },
+            { word: "米饭", type: "食物" }, { word: "三明治", type: "食物" },
+            { word: "油条", type: "食物" }, { word: "豆浆", type: "食物" },
+            { word: "蛋挞", type: "食物" }, { word: "棉花糖", type: "食物" },
 
-            // 3. 动物
+            // === 3. 动物 (大幅扩充) ===
             { word: "长颈鹿", type: "动物" }, { word: "企鹅", type: "动物" },
             { word: "大熊猫", type: "动物" }, { word: "蚊子", type: "动物" },
             { word: "恐龙", type: "动物" }, { word: "乌龟", type: "动物" },
             { word: "袋鼠", type: "动物" }, { word: "猪", type: "动物" },
             { word: "大象", type: "动物" }, { word: "蜘蛛", type: "动物" },
+            { word: "兔子", type: "动物" }, { word: "猫咪", type: "动物" },
+            { word: "狗", type: "动物" }, { word: "狮子", type: "动物" },
+            { word: "老虎", type: "动物" }, { word: "猴子", type: "动物" },
+            { word: "鸡", type: "动物" }, { word: "鸭", type: "动物" },
+            { word: "鹅", type: "动物" }, { word: "牛", type: "动物" },
+            { word: "羊", type: "动物" }, { word: "马", type: "动物" },
+            { word: "蛇", type: "动物" }, { word: "青蛙", type: "动物" },
+            { word: "蝴蝶", type: "动物" }, { word: "蜜蜂", type: "动物" },
+            { word: "蚂蚁", type: "动物" }, { word: "鲸鱼", type: "动物" },
+            { word: "海豚", type: "动物" }, { word: "鲨鱼", type: "动物" },
+            { word: "章鱼", type: "动物" }, { word: "骆驼", type: "动物" },
+            { word: "考拉", type: "动物" }, { word: "狐狸", type: "动物" },
+            { word: "狼", type: "动物" }, { word: "老鼠", type: "动物" },
+            { word: "松鼠", type: "动物" }, { word: "刺猬", type: "动物" },
+            { word: "孔雀", type: "动物" }, { word: "北极熊", type: "动物" },
 
-            // 4. 植物
+            // === 4. 植物 (原有) ===
             { word: "仙人掌", type: "植物" }, { word: "向日葵", type: "植物" },
             { word: "蘑菇", type: "植物" }, { word: "玫瑰花", type: "植物" },
             { word: "椰子树", type: "植物" }, { word: "荷花", type: "植物" },
             { word: "柳树", type: "植物" }, { word: "含羞草", type: "植物" },
+            { word: "竹子", type: "植物" }, { word: "西红柿", type: "植物" },
+            { word: "玉米", type: "植物" }, { word: "胡萝卜", type: "植物" },
+            { word: "西兰花", type: "植物" }, { word: "辣椒", type: "植物" },
 
-            // 5. 职业
+            // === 5. 职业 (原有) ===
             { word: "宇航员", type: "职业" }, { word: "厨师", type: "职业" },
             { word: "医生", type: "职业" }, { word: "理发师", type: "职业" },
             { word: "小丑", type: "职业" }, { word: "警察", type: "职业" },
             { word: "老师", type: "职业" }, { word: "外卖员", type: "职业" },
             { word: "清洁工", type: "职业" }, { word: "程序员", type: "职业" },
+            { word: "画家", type: "职业" }, { word: "歌手", type: "职业" },
+            { word: "摄影师", type: "职业" }, { word: "魔术师", type: "职业" },
 
-            // 6. 运动
+            // === 6. 运动 (原有) ===
             { word: "打篮球", type: "运动" }, { word: "游泳", type: "运动" },
             { word: "举重", type: "运动" }, { word: "滑雪", type: "运动" },
             { word: "拔河", type: "运动" }, { word: "跳绳", type: "运动" },
-            { word: "乒乓球", type: "运动" }, { word: "保龄球", type: "运动" }
+            { word: "乒乓球", type: "运动" }, { word: "保龄球", type: "运动" },
+            { word: "足球", type: "运动" }, { word: "羽毛球", type: "运动" },
+            { word: "拳击", type: "运动" }, { word: "射箭", type: "运动" },
+            { word: "骑自行车", type: "运动" }, { word: "爬山", type: "运动" }
         ];
 
         // 游戏状态
-        let currentPool = [...rawData]; // 复制一份作为当前抽奖池
+        let currentPool = [...rawData]; 
 
-        // 初始化显示总数
-        document.getElementById('total-count').innerText = rawData.length;
+        // 初始化显示
+        const totalCountEl = document.getElementById('total-count');
+        const remainCountEl = document.getElementById('remain-count');
+        
+        totalCountEl.innerText = rawData.length;
+        remainCountEl.innerText = currentPool.length;
 
         function nextWord() {
             const wordEl = document.getElementById('word-display');
@@ -147,21 +202,24 @@
             // 如果池子空了，重置
             if (currentPool.length === 0) {
                 currentPool = [...rawData];
-                alert("一轮词库已经抽完啦！将重新开始。");
+                alert("太厉害了！所有词都画完啦！\n将重新开始下一轮。");
             }
 
-            // 随机抽取算法
+            // 随机抽取
             const randomIndex = Math.floor(Math.random() * currentPool.length);
             const selectedItem = currentPool[randomIndex];
 
-            // 从池子中移除已抽取的词（防止重复）
+            // 移除已抽取的词
             currentPool.splice(randomIndex, 1);
+            
+            // 更新剩余数量显示
+            remainCountEl.innerText = currentPool.length;
 
             // 更新界面
             wordEl.innerText = selectedItem.word;
             catEl.innerText = selectedItem.type;
             
-            // 第一次点击后，按钮文字变一下
+            // 按钮文字变化
             if (btnEl.innerText === "开始游戏") {
                 btnEl.innerText = "下一个";
             }
