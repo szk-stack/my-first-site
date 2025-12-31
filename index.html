@@ -2,42 +2,170 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>你画我猜 - 随机题库</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f0f0f0;
-            padding: 20px;
+            background-color: #fce4ec; /* 淡淡的粉色背景，氛围轻松 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
             text-align: center;
         }
-        .card {
+
+        .container {
             background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-top: 50px;
+            padding: 40px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            transition: all 0.3s ease;
         }
-        h1 { color: #333; }
-        p { color: #666; line-height: 1.6; }
-        .btn {
+
+        .category-tag {
+            background-color: #eee;
+            color: #666;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin-bottom: 20px;
             display: inline-block;
-            background: #0070f3;
+            min-width: 60px;
+        }
+
+        /* 核心词汇显示区域 */
+        #word-display {
+            font-size: 60px; /* 字号很大，方便看 */
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+            min-height: 80px; /* 占位，防止抖动 */
+            line-height: 1.2;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #FF4081, #F50057);
             color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 25px;
-            margin-top: 20px;
+            border: none;
+            padding: 15px 40px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(245, 0, 87, 0.4);
+            transition: transform 0.1s;
+            outline: none;
+            width: 80%;
+            -webkit-tap-highlight-color: transparent; /* 移除手机点击的高亮背景 */
+        }
+
+        .btn:active {
+            transform: scale(0.95); /* 点击时的按压效果 */
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>你好，世界！👋</h1>
-        <p>这是我部署在 Vercel 上的第一个手机网页。</p>
-        <p>如果你在手机上看到了这句话，说明部署成功了！</p>
-        <a href="#" class="btn">点击联系我</a>
+
+    <div class="container">
+        <div id="category-display" class="category-tag">准备开始</div>
+        
+        <div id="word-display">❓</div>
+
+        <button class="btn" onclick="nextWord()" id="action-btn">开始游戏</button>
     </div>
+
+    <div class="footer">词库总量: <span id="total-count">0</span></div>
+
+    <script>
+        // --- 核心配置：词库 ---
+        // 你可以随时在这里添加新的词，格式是：{ word: "词语", type: "分类" }
+        const rawData = [
+            // 1. 日常用品
+            { word: "牙刷", type: "日常用品" }, { word: "雨伞", type: "日常用品" },
+            { word: "筷子", type: "日常用品" }, { word: "吹风机", type: "日常用品" },
+            { word: "枕头", type: "日常用品" }, { word: "马桶", type: "日常用品" },
+            { word: "钥匙", type: "日常用品" }, { word: "眼镜", type: "日常用品" },
+            { word: "遥控器", type: "日常用品" }, { word: "口罩", type: "日常用品" },
+            
+            // 2. 食物
+            { word: "汉堡", type: "食物" }, { word: "火锅", type: "食物" },
+            { word: "冰淇淋", type: "食物" }, { word: "臭豆腐", type: "食物" },
+            { word: "方便面", type: "食物" }, { word: "西瓜", type: "食物" },
+            { word: "荷包蛋", type: "食物" }, { word: "烤串", type: "食物" },
+            { word: "包子", type: "食物" }, { word: "珍珠奶茶", type: "食物" },
+
+            // 3. 动物
+            { word: "长颈鹿", type: "动物" }, { word: "企鹅", type: "动物" },
+            { word: "大熊猫", type: "动物" }, { word: "蚊子", type: "动物" },
+            { word: "恐龙", type: "动物" }, { word: "乌龟", type: "动物" },
+            { word: "袋鼠", type: "动物" }, { word: "猪", type: "动物" },
+            { word: "大象", type: "动物" }, { word: "蜘蛛", type: "动物" },
+
+            // 4. 植物
+            { word: "仙人掌", type: "植物" }, { word: "向日葵", type: "植物" },
+            { word: "蘑菇", type: "植物" }, { word: "玫瑰花", type: "植物" },
+            { word: "椰子树", type: "植物" }, { word: "荷花", type: "植物" },
+            { word: "柳树", type: "植物" }, { word: "含羞草", type: "植物" },
+
+            // 5. 职业
+            { word: "宇航员", type: "职业" }, { word: "厨师", type: "职业" },
+            { word: "医生", type: "职业" }, { word: "理发师", type: "职业" },
+            { word: "小丑", type: "职业" }, { word: "警察", type: "职业" },
+            { word: "老师", type: "职业" }, { word: "外卖员", type: "职业" },
+            { word: "清洁工", type: "职业" }, { word: "程序员", type: "职业" },
+
+            // 6. 运动
+            { word: "打篮球", type: "运动" }, { word: "游泳", type: "运动" },
+            { word: "举重", type: "运动" }, { word: "滑雪", type: "运动" },
+            { word: "拔河", type: "运动" }, { word: "跳绳", type: "运动" },
+            { word: "乒乓球", type: "运动" }, { word: "保龄球", type: "运动" }
+        ];
+
+        // 游戏状态
+        let currentPool = [...rawData]; // 复制一份作为当前抽奖池
+
+        // 初始化显示总数
+        document.getElementById('total-count').innerText = rawData.length;
+
+        function nextWord() {
+            const wordEl = document.getElementById('word-display');
+            const catEl = document.getElementById('category-display');
+            const btnEl = document.getElementById('action-btn');
+
+            // 如果池子空了，重置
+            if (currentPool.length === 0) {
+                currentPool = [...rawData];
+                alert("一轮词库已经抽完啦！将重新开始。");
+            }
+
+            // 随机抽取算法
+            const randomIndex = Math.floor(Math.random() * currentPool.length);
+            const selectedItem = currentPool[randomIndex];
+
+            // 从池子中移除已抽取的词（防止重复）
+            currentPool.splice(randomIndex, 1);
+
+            // 更新界面
+            wordEl.innerText = selectedItem.word;
+            catEl.innerText = selectedItem.type;
+            
+            // 第一次点击后，按钮文字变一下
+            if (btnEl.innerText === "开始游戏") {
+                btnEl.innerText = "下一个";
+            }
+        }
+    </script>
 </body>
 </html>
